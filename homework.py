@@ -10,13 +10,15 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-    message = ('Тип тренировки: {}; Длительность: {:.3f} ч.; '
-               'Дистанция: {:.3f} км; Ср. скорость: {:.3f} км/ч; '
-               'Потрачено ккал: {:.3f}.')
+    message = ('Тип тренировки: {training_type}; '
+               'Длительность: {duration:.3f} ч.; '
+               'Дистанция: {distance:.3f} км; '
+               'Ср. скорость: {speed:.3f} км/ч; '
+               'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self) -> str:
         """Возвращает строку сообщения"""
-        return self.message.format(*asdict(self).values())
+        return self.message.format(**asdict(self))
 
 
 class Training:
@@ -72,6 +74,9 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
+    WALK_WEIGHT_COEF: float = 0.035
+    WALK_SPEED_COEF: float = 0.029
+
     def __init__(self,
                  action: int,
                  duration: float,
@@ -82,17 +87,17 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return ((0.035 * self.weight
+        return ((self.WALK_WEIGHT_COEF * self.weight
                 + (self.get_mean_speed() ** 2 // self.height)
-                * 0.029 * self.weight) * self.duration
+                * self.WALK_SPEED_COEF * self.weight) * self.duration
                 * self.MIN_IN_HOUR)
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
-    LEN_STEP = 1.38
-    SWIM_SPEED_COEF = 1.1
-    SWIM_WEIGHT_COEF = 2
+    LEN_STEP: float = 1.38
+    SWIM_SPEED_COEF: float = 1.1
+    SWIM_WEIGHT_COEF: int = 2
 
     def __init__(self,
                  action: int,
